@@ -4,7 +4,7 @@ import './App.css';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
-import ConditionModal from './ConditionModal';
+import ConditionBar from './ConditionBar';
 
 // Helper to normalise strings for comparisons. Removes accents and
 // converts to lowercase so that names match API data reliably.
@@ -64,7 +64,6 @@ function App({ formation = [1, 4, 4, 2] }) {
   const [conditionOptions, setConditionOptions] = useState([]);
   const [selectedCondition, setSelectedCondition] = useState(null);
   const [step, setStep] = useState(0);
-  const [showConditionModal, setShowConditionModal] = useState(true);
 
   // Fetch leagues and nationalities on initial load
   useEffect(() => {
@@ -110,7 +109,6 @@ function App({ formation = [1, 4, 4, 2] }) {
       setConditionOptions(
         getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations)
       );
-      setShowConditionModal(true);
     }
   }, [leagues, nations, teamsByLeague]);
 
@@ -125,7 +123,6 @@ function App({ formation = [1, 4, 4, 2] }) {
     setChemistry(formation.map((c) => Array(c).fill(0)));
     setConditionOptions(getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations));
     setSelectedCondition(null);
-    setShowConditionModal(true);
     setStep(0);
   }, [formation]);
 
@@ -133,13 +130,13 @@ function App({ formation = [1, 4, 4, 2] }) {
     if (step < totalSlots) {
       setConditionOptions(getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations));
       setSelectedCondition(null);
-      setShowConditionModal(true);
     }
   }, [step, totalSlots]);
 
   const handleConditionSelect = (opt) => {
-    setSelectedCondition(opt);
-    setTimeout(() => setShowConditionModal(false), 500);
+    if (!selectedCondition) {
+      setSelectedCondition(opt);
+    }
   };
 
   const handleAddPlayer = (row, index) => {
@@ -226,13 +223,11 @@ function App({ formation = [1, 4, 4, 2] }) {
 
   return (
     <div className="field">
-      {showConditionModal && (
-        <ConditionModal
-          options={conditionOptions}
-          onSelect={handleConditionSelect}
-          selected={selectedCondition}
-        />
-      )}
+      <ConditionBar
+        options={conditionOptions}
+        onSelect={handleConditionSelect}
+        selected={selectedCondition}
+      />
       <div className="total-chemistry">{totalChem}/33</div>
       {selectedCondition && (
         <div className="current-condition">
