@@ -86,12 +86,13 @@ export default function ConditionBar({ options, onSelect, selected }) {
   return (
     <div className="condition-bar">
       {options.map((opt) => {
-        const isSelected = selected && selected.type === opt.type && selected.value === opt.value;
+        const isSelected =
+          selected && selected.type === opt.type && selected.value === opt.value;
         return (
           <div
             key={`${opt.type}-${canonicalize(opt.value)}`}
-            className={`condition-card ${isSelected ? 'selected' : ''} ${selected && !isSelected ? 'disabled' : ''}`}
-            onClick={() => (!selected ? onSelect(opt) : undefined)}
+            className={`condition-card ${isSelected ? 'selected' : ''}`}
+            onClick={() => onSelect(opt)}
           >
             <Logo option={opt} />
             <div className="condition-label">

@@ -28,11 +28,6 @@
   background: #e8f0ff;
 }
 
-.condition-card.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
 .condition-label {
   font-weight: bold;
   text-align: center;
