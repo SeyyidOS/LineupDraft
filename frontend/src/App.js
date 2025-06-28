@@ -109,7 +109,8 @@ function App() {
               >
                 {player && (
                   <div className="chem-badge">
-                    {chemistry[rowIndex][posIndex]}
+                    {'\u2605'.repeat(chemistry[rowIndex][posIndex])}
+                    {'\u2606'.repeat(3 - chemistry[rowIndex][posIndex])}
                   </div>
                 )}
                 {!player && '+'}
@@ -142,16 +143,20 @@ function App() {
           />
           {loading && <div>Loading...</div>}
           {!loading && (
-            <ul>
+            <div className="suggestions-grid">
               {suggestions.map((name) => (
-                <li key={name} onClick={() => handleSelect(name)}>
+                <div
+                  className="suggestion-card"
+                  key={name}
+                  onClick={() => handleSelect(name)}
+                >
                   {name}
-                </li>
+                </div>
               ))}
               {suggestions.length === 0 && debouncedQuery.trim() !== '' && (
-                <li>No players found</li>
+                <div className="suggestion-card no-results">No players found</div>
               )}
-            </ul>
+            </div>
           )}
         </div>
       )}
