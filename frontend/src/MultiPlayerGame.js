@@ -4,6 +4,11 @@ import ConditionBar from './ConditionBar';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
+import {
+  DEFAULT_LEAGUES,
+  DEFAULT_TEAMS,
+  DEFAULT_NATIONALITIES,
+} from './fallbackData';
 import './App.css';
 
 function getRandomOptions(teams, leagues, nations) {
@@ -53,10 +58,12 @@ export default function MultiPlayerGame({ formation, players }) {
           axios.get('http://localhost:8000/leagues'),
           axios.get('http://localhost:8000/nationalities'),
         ]);
-        setLeagues(leaguesRes.data.leagues || []);
-        setNations(nationsRes.data.nationalities || []);
+        setLeagues(leaguesRes.data.leagues || DEFAULT_LEAGUES);
+        setNations(nationsRes.data.nationalities || DEFAULT_NATIONALITIES);
       } catch (err) {
         console.error(err);
+        setLeagues(DEFAULT_LEAGUES);
+        setNations(DEFAULT_NATIONALITIES);
       }
     };
     fetchMeta();
@@ -68,9 +75,10 @@ export default function MultiPlayerGame({ formation, players }) {
       for (const lg of leagues) {
         try {
           const res = await axios.get('http://localhost:8000/teams', { params: { league: lg } });
-          dict[lg] = res.data.teams || [];
+          dict[lg] = res.data.teams || DEFAULT_TEAMS[lg] || [];
         } catch (err) {
           console.error(err);
+          dict[lg] = DEFAULT_TEAMS[lg] || [];
         }
       }
       setTeamsByLeague(dict);

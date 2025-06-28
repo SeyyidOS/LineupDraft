@@ -5,6 +5,11 @@ import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
 import ConditionBar from './ConditionBar';
+import {
+  DEFAULT_LEAGUES,
+  DEFAULT_TEAMS,
+  DEFAULT_NATIONALITIES,
+} from './fallbackData';
 
 // Helper to normalise strings for comparisons. Removes accents and
 // converts to lowercase so that names match API data reliably.
@@ -73,10 +78,12 @@ function App({ formation = [1, 4, 4, 2] }) {
           axios.get('http://localhost:8000/leagues'),
           axios.get('http://localhost:8000/nationalities'),
         ]);
-        setLeagues(leaguesRes.data.leagues || []);
-        setNations(nationsRes.data.nationalities || []);
+        setLeagues(leaguesRes.data.leagues || DEFAULT_LEAGUES);
+        setNations(nationsRes.data.nationalities || DEFAULT_NATIONALITIES);
       } catch (err) {
         console.error(err);
+        setLeagues(DEFAULT_LEAGUES);
+        setNations(DEFAULT_NATIONALITIES);
       }
     };
     fetchMeta();
@@ -91,9 +98,10 @@ function App({ formation = [1, 4, 4, 2] }) {
           const res = await axios.get('http://localhost:8000/teams', {
             params: { league: lg },
           });
-          dict[lg] = res.data.teams || [];
+          dict[lg] = res.data.teams || DEFAULT_TEAMS[lg] || [];
         } catch (err) {
           console.error(err);
+          dict[lg] = DEFAULT_TEAMS[lg] || [];
         }
       }
       setTeamsByLeague(dict);
