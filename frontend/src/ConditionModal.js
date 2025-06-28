@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './ConditionModal.css';
+import { canonicalize } from './nameUtils';
 
 function Logo({ option }) {
   const [src, setSrc] = useState('/logo192.png');
@@ -24,12 +25,17 @@ function Logo({ option }) {
             )}`
           );
           const data = await resp.json();
-          if (
-            data.teams &&
-            data.teams[0] &&
-            data.teams[0].strTeamBadge
-          ) {
-            url = data.teams[0].strTeamBadge;
+          if (data.teams) {
+            const normalized = canonicalize(option.value);
+            let team = data.teams.find(
+              (t) => canonicalize(t.strTeam) === normalized
+            );
+            if (!team) {
+              team = data.teams[0];
+            }
+            if (team && team.strTeamBadge) {
+              url = team.strTeamBadge;
+            }
           }
         } catch (e) {
           // ignore network errors
@@ -42,12 +48,19 @@ function Logo({ option }) {
             )}`
           );
           const data = await resp.json();
-          if (
-            data.leagues &&
-            data.leagues[0] &&
-            data.leagues[0].strBadge
-          ) {
-            url = data.leagues[0].strBadge;
+          if (data.leagues) {
+            const normalized = canonicalize(option.value);
+            let league = data.leagues.find(
+              (l) => canonicalize(l.strLeague) === normalized ||
+                (l.strLeagueAlternate &&
+                  canonicalize(l.strLeagueAlternate) === normalized)
+            );
+            if (!league) {
+              league = data.leagues[0];
+            }
+            if (league && league.strBadge) {
+              url = league.strBadge;
+            }
           }
         } catch (e) {
           // ignore network errors
