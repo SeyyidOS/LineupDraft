@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import { calculateChemistry } from './chemistry';
 
 function App() {
   const formation = [1, 4, 4, 2];
   const [players, setPlayers] = useState(
-    formation.map(count => Array(count).fill(''))
+    formation.map(count => Array(count).fill(null))
+  );
+  const [chemistry, setChemistry] = useState(
+    formation.map(count => Array(count).fill(0))
   );
   const [selectedPos, setSelectedPos] = useState(null);
   const [query, setQuery] = useState('');
@@ -27,7 +31,7 @@ function App() {
         const res = await axios.get('http://localhost:8000/players', {
           params: { search: query }
         });
-        const used = players.flat();
+        const used = players.flat().map(p => p && p.name);
         const available = res.data.players.filter(name => !used.includes(name));
         setSuggestions(available);
       } catch (err) {
@@ -37,11 +41,22 @@ function App() {
     fetchPlayers();
   }, [query, selectedPos, players]);
 
-  const handleSelect = (name) => {
+  useEffect(() => {
+    setChemistry(calculateChemistry(players));
+  }, [players]);
+
+  const handleSelect = async (name) => {
     if (!selectedPos) return;
-    const updated = players.map(r => [...r]);
-    updated[selectedPos.row][selectedPos.index] = name;
-    setPlayers(updated);
+    try {
+      const res = await axios.get('http://localhost:8000/player', {
+        params: { name }
+      });
+      const updated = players.map(r => [...r]);
+      updated[selectedPos.row][selectedPos.index] = res.data;
+      setPlayers(updated);
+    } catch (err) {
+      console.error(err);
+    }
     setSelectedPos(null);
     setQuery('');
     setSuggestions([]);
@@ -57,7 +72,7 @@ function App() {
               className="position"
               onClick={() => handleAddPlayer(rowIndex, posIndex)}
             >
-              {player || '+'}
+              {player ? `${player.name} (${chemistry[rowIndex][posIndex]})` : '+'}
             </div>
           ))}
         </div>
