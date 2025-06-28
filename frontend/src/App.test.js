@@ -26,3 +26,15 @@ test('club chemistry reaches 3 at seven players', () => {
   const result = calculateChemistry(players);
   expect(result[0].every(c => c === 3)).toBe(true);
 });
+
+test('club names are counted case-insensitively', () => {
+  const players = [
+    [
+      { name: 'p1', club: 'Real', league: 'L1', nationality: 'N1' },
+      { name: 'p2', club: 'real', league: 'L2', nationality: 'N2' },
+    ],
+  ];
+  const result = calculateChemistry(players);
+  expect(result[0][0]).toBe(1);
+  expect(result[0][1]).toBe(1);
+});

@@ -76,3 +76,12 @@ body {
 .player-search li:hover {
   background: #eee;
 }
+
+.toggle-info {
+  margin: 0 auto 10px auto;
+  padding: 5px 10px;
+}
+
+.info {
+  font-size: 12px;
+}

@@ -7,7 +7,8 @@ app = FastAPI()
 
 player_search_cache = {}
 player_detail_cache = {}
-CACHE_TTL = 3600
+SEARCH_CACHE_TTL = 3600
+DETAIL_CACHE_TTL = 60  # keep player details fresh
 
 # Enable CORS for local development
 app.add_middleware(
@@ -41,7 +42,7 @@ async def get_players(search: str):
     """Fetch player names from the free TheSportsDB API."""
     now = time.time()
     cached = player_search_cache.get(search.lower())
-    if cached and now - cached[0] < CACHE_TTL:
+    if cached and now - cached[0] < SEARCH_CACHE_TTL:
         return {"players": cached[1]}
 
     params = {"p": search}
@@ -67,7 +68,7 @@ async def get_player_details(name: str):
     """Fetch details for a specific player."""
     now = time.time()
     cached = player_detail_cache.get(name.lower())
-    if cached and now - cached[0] < CACHE_TTL:
+    if cached and now - cached[0] < DETAIL_CACHE_TTL:
         return cached[1]
 
     params = {"p": name}

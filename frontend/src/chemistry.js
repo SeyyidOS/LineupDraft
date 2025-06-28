@@ -3,11 +3,22 @@ export function calculateChemistry(players) {
   const leagues = {};
   const nations = {};
 
+  const norm = str => (str ? str.trim().toLowerCase() : '');
+
   players.flat().forEach(p => {
     if (!p) return;
-    if (p.club) clubs[p.club] = (clubs[p.club] || 0) + 1;
-    if (p.league) leagues[p.league] = (leagues[p.league] || 0) + 1;
-    if (p.nationality) nations[p.nationality] = (nations[p.nationality] || 0) + 1;
+    if (p.club) {
+      const key = norm(p.club);
+      clubs[key] = (clubs[key] || 0) + 1;
+    }
+    if (p.league) {
+      const key = norm(p.league);
+      leagues[key] = (leagues[key] || 0) + 1;
+    }
+    if (p.nationality) {
+      const key = norm(p.nationality);
+      nations[key] = (nations[key] || 0) + 1;
+    }
   });
 
   // Chemistry rules based on counts of matching attributes
@@ -35,10 +46,13 @@ export function calculateChemistry(players) {
   return players.map(row =>
     row.map(p => {
       if (!p) return 0;
+      const clubKey = norm(p.club);
+      const leagueKey = norm(p.league);
+      const nationKey = norm(p.nationality);
       const chem =
-        clubContribution(clubs[p.club] || 0) +
-        leagueContribution(leagues[p.league] || 0) +
-        nationContribution(nations[p.nationality] || 0);
+        clubContribution(clubs[clubKey] || 0) +
+        leagueContribution(leagues[leagueKey] || 0) +
+        nationContribution(nations[nationKey] || 0);
       return Math.min(3, chem);
     })
   );
