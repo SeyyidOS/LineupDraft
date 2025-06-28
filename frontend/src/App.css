@@ -48,10 +48,15 @@ body {
   top: -26px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.6);
+  /* Remove background color for a cleaner look */
+  background: none;
   color: #ffd700;
   font-size: 18px;
   padding: 2px 4px;
+  /* Add slight spacing between the stars */
+  letter-spacing: 2px;
+  /* Provide a small margin around the stars */
+  margin: 2px;
   border-radius: 4px;
   display: flex;
   align-items: center;
