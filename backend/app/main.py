@@ -82,7 +82,18 @@ async def get_player_details(name: str):
     player_list = data.get("player", []) or []
     if not player_list:
         raise HTTPException(status_code=404, detail="Player not found")
-    player = player_list[0]
+    # TheSportsDB may return multiple players for a given search string.
+    # Prefer an exact case-insensitive match on the player's name when
+    # available to avoid picking an unrelated player (which often happens
+    # to be from the Premier League).
+    player = None
+    lowered_name = name.lower()
+    for p in player_list:
+        if (p.get("strPlayer") or "").lower() == lowered_name:
+            player = p
+            break
+    if player is None:
+        player = player_list[0]
 
     # Try to obtain league information directly from the player data first.
     league = player.get("strLeague")
