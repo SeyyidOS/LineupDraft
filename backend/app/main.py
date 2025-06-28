@@ -36,9 +36,117 @@ async def root():
 
 API_URL = "https://www.thesportsdb.com/api/v1/json/3/searchplayers.php"
 
-# Endpoints for additional metadata
-ALL_LEAGUES_URL = "https://www.thesportsdb.com/api/v1/json/3/all_leagues.php"
-ALL_TEAMS_URL = "https://www.thesportsdb.com/api/v1/json/3/search_all_teams.php"
+# Most popular leagues and teams are hard coded to avoid fetching
+# large lists from the upstream API which slowed down the app.
+POPULAR_LEAGUES = [
+    "Premier League",
+    "La Liga",
+    "Serie A",
+    "Bundesliga",
+    "Ligue 1",
+    "Major League Soccer",
+    "Brasileir\u00e3o",
+    "Eredivisie",
+]
+
+POPULAR_TEAMS = {
+    "Premier League": [
+        "Arsenal",
+        "Chelsea",
+        "Liverpool",
+        "Manchester City",
+        "Manchester United",
+        "Tottenham Hotspur",
+        "Newcastle United",
+        "Everton",
+        "Aston Villa",
+        "Leeds United",
+    ],
+    "La Liga": [
+        "Real Madrid",
+        "Barcelona",
+        "Atl\u00e9tico Madrid",
+        "Sevilla",
+        "Valencia",
+        "Villarreal",
+        "Real Sociedad",
+        "Athletic Bilbao",
+        "Real Betis",
+        "Celta Vigo",
+    ],
+    "Serie A": [
+        "Juventus",
+        "AC Milan",
+        "Inter",
+        "Roma",
+        "Lazio",
+        "Napoli",
+        "Fiorentina",
+        "Atalanta",
+        "Torino",
+        "Sampdoria",
+    ],
+    "Bundesliga": [
+        "Bayern Munich",
+        "Borussia Dortmund",
+        "RB Leipzig",
+        "Bayer Leverkusen",
+        "Schalke 04",
+        "VfL Wolfsburg",
+        "Borussia M\u00f6nchengladbach",
+        "Eintracht Frankfurt",
+        "Hertha Berlin",
+        "Werder Bremen",
+    ],
+    "Ligue 1": [
+        "Paris Saint-Germain",
+        "Marseille",
+        "Lyon",
+        "Monaco",
+        "Lille",
+        "Nice",
+        "Rennes",
+        "Bordeaux",
+        "Saint-\u00c9tienne",
+        "Nantes",
+    ],
+    "Major League Soccer": [
+        "LA Galaxy",
+        "Seattle Sounders",
+        "New York City",
+        "Atlanta United",
+        "Toronto FC",
+        "Portland Timbers",
+        "New York Red Bulls",
+        "Columbus Crew",
+        "Inter Miami",
+        "DC United",
+    ],
+    "Brasileir\u00e3o": [
+        "Flamengo",
+        "Palmeiras",
+        "Corinthians",
+        "Santos",
+        "S\u00e3o Paulo",
+        "Gr\u00eamio",
+        "Internacional",
+        "Atl\u00e9tico Mineiro",
+        "Botafogo",
+        "Fluminense",
+    ],
+    "Eredivisie": [
+        "Ajax",
+        "PSV Eindhoven",
+        "Feyenoord",
+        "AZ Alkmaar",
+        "FC Utrecht",
+        "Vitesse",
+        "Heerenveen",
+        "Groningen",
+        "Twente",
+        "Sparta Rotterdam",
+    ],
+}
 
 # Some common nationalities to provide as options
 NATIONALITIES = [
@@ -63,34 +171,14 @@ NATIONALITIES = [
 
 @app.get("/leagues")
 async def get_leagues():
-    """Return a list of soccer league names from TheSportsDB."""
-    try:
-        resp = await app.state.client.get(ALL_LEAGUES_URL, timeout=10)
-        resp.raise_for_status()
-    except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=str(exc))
-
-    data = resp.json()
-    leagues = [
-        l.get("strLeague")
-        for l in data.get("leagues", [])
-        if l.get("strSport") == "Soccer" and l.get("strLeague")
-    ]
-    return {"leagues": leagues}
+    """Return a curated list of popular soccer leagues."""
+    return {"leagues": POPULAR_LEAGUES}
 
 
 @app.get("/teams")
 async def get_teams(league: str):
-    """Return up to 10 team names for the given league."""
-    params = {"l": league}
-    try:
-        resp = await app.state.client.get(ALL_TEAMS_URL, params=params, timeout=10)
-        resp.raise_for_status()
-    except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=str(exc))
-
-    data = resp.json()
-    teams = [t.get("strTeam") for t in data.get("teams", []) or [] if t.get("strTeam")]
+    """Return up to 10 popular team names for the given league."""
+    teams = POPULAR_TEAMS.get(league, [])
     return {"teams": teams[:10]}
 
 
