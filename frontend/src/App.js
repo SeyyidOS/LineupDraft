@@ -10,13 +10,26 @@ import useDebounce from './useDebounce';
 function getRandomOptions(teams, leagues, nations) {
   const categories = ['club', 'league', 'nationality'];
   const opts = [];
-  while (opts.length < 3) {
+
+  // If all pools are empty, avoid an infinite loop
+  if (
+    (!teams || teams.length === 0) &&
+    (!leagues || leagues.length === 0) &&
+    (!nations || nations.length === 0)
+  ) {
+    return opts;
+  }
+
+  let attempts = 0;
+  const maxAttempts = 50; // safety guard
+  while (opts.length < 3 && attempts < maxAttempts) {
+    attempts += 1;
     const type = categories[Math.floor(Math.random() * categories.length)];
     const pool = type === 'club' ? teams : type === 'league' ? leagues : nations;
     if (!pool || pool.length === 0) continue;
     const value = pool[Math.floor(Math.random() * pool.length)];
     const option = { type, value };
-    if (!opts.find(o => o.type === option.type && o.value === option.value)) {
+    if (!opts.find((o) => o.type === option.type && o.value === option.value)) {
       opts.push(option);
     }
   }
