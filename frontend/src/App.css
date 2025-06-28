@@ -37,6 +37,13 @@ body {
   border-style: solid;
 }
 
+.total-chemistry {
+  color: #fff;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
 .player-search {
   position: fixed;
   top: 20%;
