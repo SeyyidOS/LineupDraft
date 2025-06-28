@@ -41,6 +41,30 @@ async def get_players(search: str):
     return {"players": names}
 
 
+@app.get("/player")
+async def get_player_details(name: str):
+    """Fetch details for a specific player."""
+    params = {"p": name}
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(API_URL, params=params, timeout=10)
+            response.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+    data = response.json()
+    player_list = data.get("player", []) or []
+    if not player_list:
+        raise HTTPException(status_code=404, detail="Player not found")
+    player = player_list[0]
+    return {
+        "name": player.get("strPlayer"),
+        "nationality": player.get("strNationality"),
+        "club": player.get("strTeam"),
+        "league": player.get("strLeague"),
+    }
+
+
 # # Allow React dev server on localhost:3000
 # app.add_middleware(
 #     CORSMiddleware,
