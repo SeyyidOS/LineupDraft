@@ -134,9 +134,7 @@ function App({ formation = [1, 4, 4, 2] }) {
   }, [step, totalSlots]);
 
   const handleConditionSelect = (opt) => {
-    if (!selectedCondition) {
-      setSelectedCondition(opt);
-    }
+    setSelectedCondition(opt);
   };
 
   const handleAddPlayer = (row, index) => {
