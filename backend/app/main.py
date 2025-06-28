@@ -95,13 +95,9 @@ async def get_player_details(name: str):
     if player is None:
         player = player_list[0]
 
-    # Try to obtain league information directly from the player data first.
-    league = player.get("strLeague")
-
-    # If the league is missing, attempt a secondary lookup using the player's
-    # current team. TheSportsDB provides the team ID which can be used to query
-    # additional details including the league name.
-    if not league and player.get("idTeam"):
+    # Fetch the player's league by first looking up their team information.
+    league = None
+    if player.get("idTeam"):
         team_params = {"id": player.get("idTeam")}
         try:
             team_resp = await app.state.client.get(
