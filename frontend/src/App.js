@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 import { calculateChemistry } from './chemistry';
+import useDebounce from './useDebounce';
 
 function App() {
   const formation = [1, 4, 4, 2];
@@ -14,6 +15,9 @@ function App() {
   const [selectedPos, setSelectedPos] = useState(null);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const debouncedQuery = useDebounce(query, 300);
 
   const handleAddPlayer = (row, index) => {
     setSelectedPos({ row, index });
@@ -22,24 +26,32 @@ function App() {
   };
 
   useEffect(() => {
+    let cancel = false;
     const fetchPlayers = async () => {
-      if (!selectedPos || query.trim() === '') {
+      if (!selectedPos || debouncedQuery.trim() === '') {
         setSuggestions([]);
         return;
       }
+      setLoading(true);
       try {
         const res = await axios.get('http://localhost:8000/players', {
-          params: { search: query }
+          params: { search: debouncedQuery }
         });
+        if (cancel) return;
         const used = players.flat().map(p => p && p.name);
         const available = res.data.players.filter(name => !used.includes(name));
         setSuggestions(available);
       } catch (err) {
-        console.error(err);
+        if (!cancel) console.error(err);
+      } finally {
+        if (!cancel) setLoading(false);
       }
     };
     fetchPlayers();
-  }, [query, selectedPos, players]);
+    return () => {
+      cancel = true;
+    };
+  }, [debouncedQuery, selectedPos, players]);
 
   useEffect(() => {
     setChemistry(calculateChemistry(players));
@@ -69,7 +81,13 @@ function App() {
           {row.map((player, posIndex) => (
             <div
               key={posIndex}
-              className="position"
+              className={`position ${
+                selectedPos &&
+                selectedPos.row === rowIndex &&
+                selectedPos.index === posIndex
+                  ? 'selected'
+                  : ''
+              }`}
               onClick={() => handleAddPlayer(rowIndex, posIndex)}
             >
               {player ? `${player.name} (${chemistry[rowIndex][posIndex]})` : '+'}
@@ -85,13 +103,19 @@ function App() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search players"
           />
-          <ul>
-            {suggestions.map((name) => (
-              <li key={name} onClick={() => handleSelect(name)}>
-                {name}
-              </li>
-            ))}
-          </ul>
+          {loading && <div>Loading...</div>}
+          {!loading && (
+            <ul>
+              {suggestions.map((name) => (
+                <li key={name} onClick={() => handleSelect(name)}>
+                  {name}
+                </li>
+              ))}
+              {suggestions.length === 0 && debouncedQuery.trim() !== '' && (
+                <li>No players found</li>
+              )}
+            </ul>
+          )}
         </div>
       )}
     </div>
