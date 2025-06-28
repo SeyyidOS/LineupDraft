@@ -17,6 +17,7 @@ function App() {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   const debouncedQuery = useDebounce(query, 300);
 
@@ -80,6 +81,9 @@ function App() {
   return (
     <div className="field">
       <div className="total-chemistry">{totalChem}/33</div>
+      <button className="toggle-info" onClick={() => setShowInfo(!showInfo)}>
+        {showInfo ? 'Hide info' : 'Show info'}
+      </button>
       {players.map((row, rowIndex) => (
         <div className="row" key={rowIndex}>
           {row.map((player, posIndex) => (
@@ -94,7 +98,18 @@ function App() {
               }`}
               onClick={() => handleAddPlayer(rowIndex, posIndex)}
             >
-              {player ? `${player.name} (${chemistry[rowIndex][posIndex]})` : '+'}
+              {player ? (
+                <>
+                  {player.name} ({chemistry[rowIndex][posIndex]})
+                  {showInfo && (
+                    <div className="info">
+                      {player.club || 'Unknown'} / {player.nationality || 'Unknown'}
+                    </div>
+                  )}
+                </>
+              ) : (
+                '+'
+              )}
             </div>
           ))}
         </div>
