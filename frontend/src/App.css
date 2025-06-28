@@ -109,6 +109,13 @@ body {
   padding: 5px 10px;
 }
 
-.info {
+.info-list {
   font-size: 12px;
+  margin: 4px 0;
+  padding-left: 16px;
+  text-align: left;
+}
+
+.info-list li {
+  margin: 2px 0;
 }
