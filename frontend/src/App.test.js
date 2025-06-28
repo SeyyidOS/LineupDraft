@@ -38,3 +38,28 @@ test('club names are counted case-insensitively', () => {
   expect(result[0][0]).toBe(1);
   expect(result[0][1]).toBe(1);
 });
+
+test('league chemistry reaches 3 at eight players', () => {
+  const players = [
+    Array.from({ length: 8 }, (_, i) => ({
+      name: `p${i}`,
+      club: `C${i}`,
+      league: 'La Liga',
+      nationality: `N${i}`,
+    }))
+  ];
+  const result = calculateChemistry(players);
+  expect(result[0].every(c => c === 3)).toBe(true);
+});
+
+test('league names are counted case-insensitively', () => {
+  const players = [
+    [
+      { name: 'p1', club: 'A', league: 'Premier League', nationality: 'N1' },
+      { name: 'p2', club: 'B', league: 'premier league', nationality: 'N2' },
+      { name: 'p3', club: 'C', league: 'Premier League', nationality: 'N3' }
+    ]
+  ];
+  const result = calculateChemistry(players);
+  expect(result[0].every(c => c === 1)).toBe(true);
+});

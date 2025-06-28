@@ -103,7 +103,7 @@ function App() {
                   {player.name} ({chemistry[rowIndex][posIndex]})
                   {showInfo && (
                     <div className="info">
-                      {player.club || 'Unknown'} / {player.nationality || 'Unknown'}
+                    {player.club || 'Unknown'} / {player.league || 'Unknown'} / {player.nationality || 'Unknown'}
                     </div>
                   )}
                 </>
