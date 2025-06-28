@@ -83,11 +83,34 @@ async def get_player_details(name: str):
     if not player_list:
         raise HTTPException(status_code=404, detail="Player not found")
     player = player_list[0]
+
+    # Try to obtain league information directly from the player data first.
+    league = player.get("strLeague")
+
+    # If the league is missing, attempt a secondary lookup using the player's
+    # current team. TheSportsDB provides the team ID which can be used to query
+    # additional details including the league name.
+    if not league and player.get("idTeam"):
+        team_params = {"id": player.get("idTeam")}
+        try:
+            team_resp = await app.state.client.get(
+                "https://www.thesportsdb.com/api/v1/json/3/lookupteam.php",
+                params=team_params,
+                timeout=10,
+            )
+            team_resp.raise_for_status()
+            team_data = team_resp.json()
+            team_list = team_data.get("teams", []) or []
+            if team_list:
+                league = team_list[0].get("strLeague")
+        except httpx.HTTPError:
+            league = None
+
     result = {
         "name": player.get("strPlayer"),
         "nationality": player.get("strNationality"),
         "club": player.get("strTeam"),
-        "league": player.get("strLeague"),
+        "league": league,
     }
     player_detail_cache[name.lower()] = (now, result)
     return result
