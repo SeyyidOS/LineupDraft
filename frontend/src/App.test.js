@@ -44,7 +44,7 @@ test('league chemistry reaches 3 at eight players', () => {
     Array.from({ length: 8 }, (_, i) => ({
       name: `p${i}`,
       club: `C${i}`,
-      league: 'La Liga',
+      league: 'Spanish La Liga',
       nationality: `N${i}`,
     }))
   ];
@@ -55,9 +55,9 @@ test('league chemistry reaches 3 at eight players', () => {
 test('league names are counted case-insensitively', () => {
   const players = [
     [
-      { name: 'p1', club: 'A', league: 'Premier League', nationality: 'N1' },
-      { name: 'p2', club: 'B', league: 'premier league', nationality: 'N2' },
-      { name: 'p3', club: 'C', league: 'Premier League', nationality: 'N3' }
+      { name: 'p1', club: 'A', league: 'English Premier League', nationality: 'N1' },
+      { name: 'p2', club: 'B', league: 'english premier league', nationality: 'N2' },
+      { name: 'p3', club: 'C', league: 'English Premier League', nationality: 'N3' }
     ]
   ];
   const result = calculateChemistry(players);

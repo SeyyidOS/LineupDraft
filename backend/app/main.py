@@ -42,17 +42,15 @@ API_URL = "https://www.thesportsdb.com/api/v1/json/3/searchplayers.php"
 # match exactly what the upstream API returns so that league lookups work
 # correctly.
 POPULAR_LEAGUES = [
-    "Premier League",
-    "La Liga",
-    "Serie A",
-    "Bundesliga",
-    "Ligue 1",
-    "Turkish Super Lig",
-    "Eredivisie",
+    "English Premier League",
+    "Spanish La Liga",
+    "Italian Serie A",
+    "German Bundesliga",
+    "French Ligue 1",
 ]
 
 POPULAR_TEAMS = {
-    "Premier League": [
+    "English Premier League": [
         "Arsenal",
         "Chelsea",
         "Liverpool",
@@ -64,7 +62,7 @@ POPULAR_TEAMS = {
         "Aston Villa",
         "Leeds United",
     ],
-    "La Liga": [
+    "Spanish La Liga": [
         "Real Madrid",
         "Barcelona",
         "Atl\u00e9tico Madrid",
@@ -76,7 +74,7 @@ POPULAR_TEAMS = {
         "Real Betis",
         "Celta Vigo",
     ],
-    "Serie A": [
+    "Italian Serie A": [
         "Juventus",
         "AC Milan",
         "Inter",
@@ -88,7 +86,7 @@ POPULAR_TEAMS = {
         "Torino",
         "Sampdoria",
     ],
-    "Bundesliga": [
+    "German Bundesliga": [
         "Bayern Munich",
         "Borussia Dortmund",
         "RB Leipzig",
@@ -100,7 +98,7 @@ POPULAR_TEAMS = {
         "Hertha Berlin",
         "Werder Bremen",
     ],
-    "Ligue 1": [
+    "French Ligue 1": [
         "Paris Saint-Germain",
         "Marseille",
         "Lyon",
@@ -112,42 +110,7 @@ POPULAR_TEAMS = {
         "Saint-\u00c9tienne",
         "Nantes",
     ],
-    "Major League Soccer": [
-        "LA Galaxy",
-        "Seattle Sounders",
-        "New York City",
-        "Atlanta United",
-        "Toronto FC",
-        "Portland Timbers",
-        "New York Red Bulls",
-        "Columbus Crew",
-        "Inter Miami",
-        "DC United",
-    ],
-    "Brasileir\u00e3o": [
-        "Flamengo",
-        "Palmeiras",
-        "Corinthians",
-        "Santos",
-        "S\u00e3o Paulo",
-        "Gr\u00eamio",
-        "Internacional",
-        "Atl\u00e9tico Mineiro",
-        "Botafogo",
-        "Fluminense",
-    ],
-    "Eredivisie": [
-        "Ajax",
-        "PSV Eindhoven",
-        "Feyenoord",
-        "AZ Alkmaar",
-        "FC Utrecht",
-        "Vitesse",
-        "Heerenveen",
-        "Groningen",
-        "Twente",
-        "Sparta Rotterdam",
-    ],
+    # Additional leagues can be added here if needed
 }
 
 # Some common nationalities to provide as options
@@ -238,7 +201,7 @@ async def get_player_details(name: str):
     # TheSportsDB may return multiple players for a given search string.
     # Prefer an exact case-insensitive match on the player's name when
     # available to avoid picking an unrelated player (which often happens
-    # to be from the Premier League).
+    # to be from the English Premier League).
     player = None
     lowered_name = name.lower()
     for p in player_list:
