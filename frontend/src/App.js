@@ -21,6 +21,8 @@ function App() {
 
   const debouncedQuery = useDebounce(query, 300);
 
+  const displayRows = players.slice().reverse();
+
   const handleAddPlayer = (row, index) => {
     setSelectedPos({ row, index });
     setQuery('');
@@ -84,9 +86,11 @@ function App() {
       <button className="toggle-info" onClick={() => setShowInfo(!showInfo)}>
         {showInfo ? 'Hide info' : 'Show info'}
       </button>
-      {players.map((row, rowIndex) => (
-        <div className="row" key={rowIndex}>
-          {row.map((player, posIndex) => (
+      {displayRows.map((row, displayIndex) => {
+        const rowIndex = players.length - 1 - displayIndex;
+        return (
+          <div className="row" key={rowIndex}>
+            {row.map((player, posIndex) => (
             <div className="position-container" key={posIndex}>
               <div
                 className={`position ${
@@ -114,17 +118,20 @@ function App() {
                 <>
                   <div className="player-name">{player.name}</div>
                   {showInfo && (
-                    <div className="info">
-                      {player.club || 'Unknown'} / {player.league || 'Unknown'} /
-                      {player.nationality || 'Unknown'}
-                    </div>
+                      <ul className="info-list">
+                        <li>Club: {player.club || "Unknown"}</li>
+                        <li>League: {player.league || "Unknown"}</li>
+                        <li>Nation: {player.nationality || "Unknown"}</li>
+                        <li>Chemistry: {chemistry[rowIndex][posIndex]}</li>
+                      </ul>
                   )}
                 </>
               )}
             </div>
           ))}
         </div>
-      ))}
+      );
+      })}
       {selectedPos && (
         <div className="player-search">
           <input
