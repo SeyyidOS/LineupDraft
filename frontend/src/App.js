@@ -4,13 +4,12 @@ import './App.css';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 
-function App() {
-  const formation = [1, 4, 4, 2];
+function App({ formation = [1, 4, 4, 2] }) {
   const [players, setPlayers] = useState(
-    formation.map(count => Array(count).fill(null))
+    formation.map((count) => Array(count).fill(null))
   );
   const [chemistry, setChemistry] = useState(
-    formation.map(count => Array(count).fill(0))
+    formation.map((count) => Array(count).fill(0))
   );
   const [totalChem, setTotalChem] = useState(0);
   const [selectedPos, setSelectedPos] = useState(null);
@@ -22,6 +21,12 @@ function App() {
   const debouncedQuery = useDebounce(query, 300);
 
   const displayRows = players.slice().reverse();
+
+  // Reset player grid if the formation prop changes
+  useEffect(() => {
+    setPlayers(formation.map((c) => Array(c).fill(null)));
+    setChemistry(formation.map((c) => Array(c).fill(0)));
+  }, [formation]);
 
   const handleAddPlayer = (row, index) => {
     setSelectedPos({ row, index });
