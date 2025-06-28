@@ -87,28 +87,39 @@ function App() {
       {players.map((row, rowIndex) => (
         <div className="row" key={rowIndex}>
           {row.map((player, posIndex) => (
-            <div
-              key={posIndex}
-              className={`position ${
-                selectedPos &&
-                selectedPos.row === rowIndex &&
-                selectedPos.index === posIndex
-                  ? 'selected'
-                  : ''
-              }`}
-              onClick={() => handleAddPlayer(rowIndex, posIndex)}
-            >
-              {player ? (
+            <div className="position-container" key={posIndex}>
+              <div
+                className={`position ${
+                  selectedPos &&
+                  selectedPos.row === rowIndex &&
+                  selectedPos.index === posIndex
+                    ? 'selected'
+                    : ''
+                }`}
+                onClick={() => handleAddPlayer(rowIndex, posIndex)}
+                style={
+                  player && player.photo
+                    ? { backgroundImage: `url(${player.photo})` }
+                    : {}
+                }
+              >
+                {player && (
+                  <div className="chem-badge">
+                    {chemistry[rowIndex][posIndex]}
+                  </div>
+                )}
+                {!player && '+'}
+              </div>
+              {player && (
                 <>
-                  {player.name} ({chemistry[rowIndex][posIndex]})
+                  <div className="player-name">{player.name}</div>
                   {showInfo && (
                     <div className="info">
-                    {player.club || 'Unknown'} / {player.league || 'Unknown'} / {player.nationality || 'Unknown'}
+                      {player.club || 'Unknown'} / {player.league || 'Unknown'} /
+                      {player.nationality || 'Unknown'}
                     </div>
                   )}
                 </>
-              ) : (
-                '+'
               )}
             </div>
           ))}

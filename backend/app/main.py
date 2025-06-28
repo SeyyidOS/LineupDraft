@@ -120,6 +120,9 @@ async def get_player_details(name: str):
         "nationality": player.get("strNationality"),
         "club": player.get("strTeam"),
         "league": league,
+        "photo": player.get("strCutout")
+        or player.get("strThumb")
+        or player.get("strRender"),
     }
     player_detail_cache[name.lower()] = (now, result)
     return result

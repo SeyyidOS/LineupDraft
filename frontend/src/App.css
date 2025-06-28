@@ -18,18 +18,45 @@ body {
   align-items: center;
 }
 
+.position-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  color: #fff;
+  text-align: center;
+}
+
 .position {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: 2px dashed #fff;
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.2);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.chem-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.player-name {
+  margin-top: 4px;
+  font-size: 12px;
 }
 
 .position.selected {
