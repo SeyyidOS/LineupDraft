@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import StartPage from './StartPage';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+function Root() {
+  const [formation, setFormation] = useState(null);
+
+  if (!formation) {
+    return <StartPage onSelect={setFormation} />;
+  }
+  return <App formation={formation} />;
+}
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>
 );
 
