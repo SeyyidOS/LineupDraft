@@ -5,6 +5,7 @@ import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
 import ConditionBar from './ConditionBar';
+import ConditionModal from './ConditionModal';
 import {
   DEFAULT_LEAGUES,
   DEFAULT_TEAMS,
@@ -229,6 +230,13 @@ function App({ formation = [1, 4, 4, 2] }) {
 
   return (
     <div className="field">
+      {!selectedCondition && step < totalSlots && (
+        <ConditionModal
+          options={conditionOptions}
+          onSelect={handleConditionSelect}
+          selected={selectedCondition}
+        />
+      )}
       <ConditionBar
         options={conditionOptions}
         onSelect={handleConditionSelect}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ConditionBar from './ConditionBar';
+import ConditionModal from './ConditionModal';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
@@ -199,8 +200,17 @@ export default function MultiPlayerGame({ formation, players }) {
   return (
     <div className="field">
       {!selectedCondition && currentPlayer === pickerIndex && (
-        <ConditionBar options={conditionOptions} onSelect={handleConditionSelect} selected={selectedCondition} />
+        <ConditionModal
+          options={conditionOptions}
+          onSelect={handleConditionSelect}
+          selected={selectedCondition}
+        />
       )}
+      <ConditionBar
+        options={conditionOptions}
+        onSelect={handleConditionSelect}
+        selected={selectedCondition}
+      />
       {selectedCondition && (
         <div className="current-condition">
           Player {players[currentPlayer]} - {selectedCondition.type}: {selectedCondition.value}
