@@ -143,3 +143,24 @@ body {
   color: #fff;
   white-space: nowrap;
 }
+
+.condition-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.condition-option {
+  padding: 6px 12px;
+  border: 2px solid #fff;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.condition-option.selected {
+  background: #fff;
+  color: #000;
+}
