@@ -36,6 +36,69 @@ async def root():
 
 API_URL = "https://www.thesportsdb.com/api/v1/json/3/searchplayers.php"
 
+# Endpoints for additional metadata
+ALL_LEAGUES_URL = "https://www.thesportsdb.com/api/v1/json/3/all_leagues.php"
+ALL_TEAMS_URL = "https://www.thesportsdb.com/api/v1/json/3/search_all_teams.php"
+
+# Some common nationalities to provide as options
+NATIONALITIES = [
+    "Brazil",
+    "Spain",
+    "Italy",
+    "France",
+    "Germany",
+    "Argentina",
+    "Portugal",
+    "Netherlands",
+    "England",
+    "Belgium",
+    "Croatia",
+    "Uruguay",
+    "Mexico",
+    "United States",
+    "Japan",
+    "South Korea",
+]
+
+
+@app.get("/leagues")
+async def get_leagues():
+    """Return a list of soccer league names from TheSportsDB."""
+    try:
+        resp = await app.state.client.get(ALL_LEAGUES_URL, timeout=10)
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+    data = resp.json()
+    leagues = [
+        l.get("strLeague")
+        for l in data.get("leagues", [])
+        if l.get("strSport") == "Soccer" and l.get("strLeague")
+    ]
+    return {"leagues": leagues}
+
+
+@app.get("/teams")
+async def get_teams(league: str):
+    """Return up to 10 team names for the given league."""
+    params = {"l": league}
+    try:
+        resp = await app.state.client.get(ALL_TEAMS_URL, params=params, timeout=10)
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+    data = resp.json()
+    teams = [t.get("strTeam") for t in data.get("teams", []) or [] if t.get("strTeam")]
+    return {"teams": teams[:10]}
+
+
+@app.get("/nationalities")
+async def get_nationalities():
+    """Return a list of common nationalities."""
+    return {"nationalities": NATIONALITIES}
+
 
 @app.get("/players")
 async def get_players(search: str):

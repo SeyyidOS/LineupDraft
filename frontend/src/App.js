@@ -4,16 +4,16 @@ import './App.css';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 
-const TEAMS = ['Arsenal', 'Barcelona', 'Napoli', 'Real Madrid', 'Liverpool'];
-const LEAGUES = ['Premier League', 'La Liga', 'Serie A', 'Bundesliga', 'Ligue 1'];
-const NATIONS = ['Brazil', 'Spain', 'Italy', 'France', 'Germany', 'Argentina'];
+// Lists of teams, leagues and nationalities are now fetched from the backend
+// instead of being hard coded.
 
-function getRandomOptions() {
+function getRandomOptions(teams, leagues, nations) {
   const categories = ['club', 'league', 'nationality'];
   const opts = [];
   while (opts.length < 3) {
     const type = categories[Math.floor(Math.random() * categories.length)];
-    const pool = type === 'club' ? TEAMS : type === 'league' ? LEAGUES : NATIONS;
+    const pool = type === 'club' ? teams : type === 'league' ? leagues : nations;
+    if (!pool || pool.length === 0) continue;
     const value = pool[Math.floor(Math.random() * pool.length)];
     const option = { type, value };
     if (!opts.find(o => o.type === option.type && o.value === option.value)) {
@@ -36,9 +36,59 @@ function App({ formation = [1, 4, 4, 2] }) {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  const [conditionOptions, setConditionOptions] = useState(getRandomOptions());
+  const [leagues, setLeagues] = useState([]);
+  const [teamsByLeague, setTeamsByLeague] = useState({});
+  const [nations, setNations] = useState([]);
+  const [conditionOptions, setConditionOptions] = useState([]);
   const [selectedCondition, setSelectedCondition] = useState(null);
   const [step, setStep] = useState(0);
+
+  // Fetch leagues and nationalities on initial load
+  useEffect(() => {
+    const fetchMeta = async () => {
+      try {
+        const [leaguesRes, nationsRes] = await Promise.all([
+          axios.get('http://localhost:8000/leagues'),
+          axios.get('http://localhost:8000/nationalities'),
+        ]);
+        setLeagues(leaguesRes.data.leagues || []);
+        setNations(nationsRes.data.nationalities || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchMeta();
+  }, []);
+
+  // Once leagues are fetched, load the top teams for each league
+  useEffect(() => {
+    const fetchTeams = async () => {
+      const dict = {};
+      for (const lg of leagues) {
+        try {
+          const res = await axios.get('http://localhost:8000/teams', {
+            params: { league: lg },
+          });
+          dict[lg] = res.data.teams || [];
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      setTeamsByLeague(dict);
+    };
+    if (leagues.length) {
+      fetchTeams();
+    }
+  }, [leagues]);
+
+  // When all metadata is available, generate initial condition options
+  useEffect(() => {
+    if (leagues.length && nations.length && Object.keys(teamsByLeague).length) {
+      setConditionOptions(
+        getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations)
+      );
+    }
+  }, [leagues, nations, teamsByLeague]);
 
   const debouncedQuery = useDebounce(query, 300);
   const totalSlots = players.flat().length;
@@ -49,14 +99,14 @@ function App({ formation = [1, 4, 4, 2] }) {
   useEffect(() => {
     setPlayers(formation.map((c) => Array(c).fill(null)));
     setChemistry(formation.map((c) => Array(c).fill(0)));
-    setConditionOptions(getRandomOptions());
+    setConditionOptions(getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations));
     setSelectedCondition(null);
     setStep(0);
   }, [formation]);
 
   useEffect(() => {
     if (step < totalSlots) {
-      setConditionOptions(getRandomOptions());
+      setConditionOptions(getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations));
       setSelectedCondition(null);
     }
   }, [step, totalSlots]);
