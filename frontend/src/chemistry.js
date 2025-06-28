@@ -1,3 +1,5 @@
+import { canonicalize } from './nameUtils';
+
 export function calculateChemistry(players) {
   const clubs = {};
   const leagues = {};
@@ -5,14 +7,9 @@ export function calculateChemistry(players) {
 
   // Normalise strings for comparison.  This removes accents and
   // lowercases the value so that 'Atletico' matches 'Atl\u00e9tico', etc.
-  const norm = (str) =>
-    str
-      ? str
-          .trim()
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-      : '';
+  // Use shared canonicalisation so that values with prefixes like
+  // "The Netherlands" match "Netherlands" and accents are removed.
+  const norm = canonicalize;
 
   players.flat().forEach(p => {
     if (!p) return;

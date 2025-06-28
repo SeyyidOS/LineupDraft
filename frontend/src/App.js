@@ -3,17 +3,14 @@ import axios from 'axios';
 import './App.css';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
+import { canonicalize } from './nameUtils';
 
 // Helper to normalise strings for comparisons. Removes accents and
 // converts to lowercase so that names match API data reliably.
-const normalizeString = (str) =>
-  str
-    ? str
-        .trim()
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-    : '';
+// Normalize a string for comparison against API data. Accents are removed,
+// case is lowered and any leading "The" is stripped so that user friendly
+// names like "Netherlands" match API values such as "The Netherlands".
+const normalizeString = canonicalize;
 
 // Lists of teams, leagues and nationalities are now fetched from the backend
 // instead of being hard coded.
