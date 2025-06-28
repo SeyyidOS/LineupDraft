@@ -1,7 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import time
+from typing import Dict, Any
+import asyncio
+
+from .game import game_manager
 
 app = FastAPI()
 
@@ -32,6 +36,91 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+# ----- Game session endpoints -----
+from .schemas import CreateGameRequest, JoinGameRequest
+
+
+@app.post("/game")
+async def create_game(req: CreateGameRequest):
+    game = game_manager.create_game(req.formation)
+    game.add_player(req.host)
+    return {"code": game.code}
+
+
+@app.post("/game/{code}/join")
+async def join_game(code: str, req: JoinGameRequest):
+    game = game_manager.get_game(code)
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    try:
+        game.add_player(req.name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return {"ok": True}
+
+
+@app.websocket("/ws/{code}/{name}")
+async def game_ws(ws: WebSocket, code: str, name: str):
+    game = game_manager.get_game(code)
+    if not game or name not in game.players:
+        await ws.close()
+        return
+    queue = asyncio.Queue()
+    game.connections[name].append(queue)
+    await ws.accept()
+    await queue.put({"type": "init", "players": game.players, "formation": game.formation,
+                     "picker": game.players[game.picker_index],
+                     "current": game.players[game.current_index],
+                     "used": game.used_players, "condition": game.condition})
+
+    async def sender():
+        try:
+            while True:
+                msg = await queue.get()
+                await ws.send_json(msg)
+        except WebSocketDisconnect:
+            pass
+
+    sender_task = asyncio.create_task(sender())
+    try:
+        while True:
+            data = await ws.receive_json()
+            if data.get("type") == "pick_condition":
+                if name != game.players[game.picker_index]:
+                    continue
+                game.condition = data.get("condition")
+                for qs in game.connections.values():
+                    for q in qs:
+                        await q.put({"type": "condition", "condition": game.condition, "picker": name})
+            elif data.get("type") == "pick_player":
+                if name != game.players[game.current_index]:
+                    continue
+                player_name = data.get("name")
+                row = data.get("row")
+                index = data.get("index")
+                if player_name in game.used_players:
+                    continue
+                lu = game.lineups[name]
+                if row < 0 or row >= len(lu) or index < 0 or index >= len(lu[row]):
+                    continue
+                lu[row][index] = player_name
+                game.used_players.append(player_name)
+                for qs in game.connections.values():
+                    for q in qs:
+                        await q.put({"type": "player_used", "name": player_name})
+                game.next_turn()
+                for qs in game.connections.values():
+                    for q in qs:
+                        await q.put({"type": "turn", "current": game.players[game.current_index],
+                                     "picker": game.players[game.picker_index],
+                                     "condition": game.condition})
+    except WebSocketDisconnect:
+        pass
+    finally:
+        sender_task.cancel()
+        game.connections[name].remove(queue)
 
 
 API_URL = "https://www.thesportsdb.com/api/v1/json/3/searchplayers.php"
