@@ -4,6 +4,17 @@ import './App.css';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 
+// Helper to normalise strings for comparisons. Removes accents and
+// converts to lowercase so that names match API data reliably.
+const normalizeString = (str) =>
+  str
+    ? str
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+    : '';
+
 // Lists of teams, leagues and nationalities are now fetched from the backend
 // instead of being hard coded.
 
@@ -171,15 +182,15 @@ function App({ formation = [1, 4, 4, 2] }) {
 
   const matchesCondition = (player) => {
     if (!selectedCondition) return true;
-    const val = selectedCondition.value.toLowerCase();
+    const val = normalizeString(selectedCondition.value);
     if (selectedCondition.type === 'club') {
-      return (player.club || '').toLowerCase() === val;
+      return normalizeString(player.club) === val;
     }
     if (selectedCondition.type === 'league') {
-      return (player.league || '').toLowerCase() === val;
+      return normalizeString(player.league) === val;
     }
     if (selectedCondition.type === 'nationality') {
-      return (player.nationality || '').toLowerCase() === val;
+      return normalizeString(player.nationality) === val;
     }
     return false;
   };
