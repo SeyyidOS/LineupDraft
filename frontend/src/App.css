@@ -31,3 +31,36 @@ body {
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.2);
 }
+
+.player-search {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.player-search input {
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.player-search ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.player-search li {
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.player-search li:hover {
+  background: #eee;
+}
