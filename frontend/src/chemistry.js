@@ -10,23 +10,24 @@ export function calculateChemistry(players) {
     if (p.nationality) nations[p.nationality] = (nations[p.nationality] || 0) + 1;
   });
 
+  // New chemistry rules
   const clubContribution = count => {
-    if (count >= 4) return 3;
-    if (count >= 3) return 2;
+    if (count >= 7) return 3;
+    if (count >= 4) return 2;
     if (count >= 2) return 1;
     return 0;
   };
 
   const leagueContribution = count => {
-    if (count >= 7) return 3;
+    if (count >= 8) return 3;
     if (count >= 5) return 2;
     if (count >= 3) return 1;
     return 0;
   };
 
   const nationContribution = count => {
-    if (count >= 6) return 3;
-    if (count >= 4) return 2;
+    if (count >= 8) return 3;
+    if (count >= 5) return 2;
     if (count >= 2) return 1;
     return 0;
   };

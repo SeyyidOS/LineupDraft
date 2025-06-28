@@ -12,6 +12,7 @@ function App() {
   const [chemistry, setChemistry] = useState(
     formation.map(count => Array(count).fill(0))
   );
+  const [totalChem, setTotalChem] = useState(0);
   const [selectedPos, setSelectedPos] = useState(null);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -54,7 +55,9 @@ function App() {
   }, [debouncedQuery, selectedPos, players]);
 
   useEffect(() => {
-    setChemistry(calculateChemistry(players));
+    const newChem = calculateChemistry(players);
+    setChemistry(newChem);
+    setTotalChem(newChem.flat().reduce((sum, c) => sum + c, 0));
   }, [players]);
 
   const handleSelect = async (name) => {
@@ -76,6 +79,7 @@ function App() {
 
   return (
     <div className="field">
+      <div className="total-chemistry">{totalChem}/33</div>
       {players.map((row, rowIndex) => (
         <div className="row" key={rowIndex}>
           {row.map((player, posIndex) => (
