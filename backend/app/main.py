@@ -95,13 +95,15 @@ async def get_player_details(name: str):
     if player is None:
         player = player_list[0]
 
-    # Fetch the player's league by first looking up their team information.
+    # Fetch the player's league by searching for the team name. Using the
+    # search endpoint avoids issues where the team ID doesn't return complete
+    # league information.
     league = None
-    if player.get("idTeam"):
-        team_params = {"id": player.get("idTeam")}
+    if player.get("strTeam"):
+        team_params = {"t": player.get("strTeam")}
         try:
             team_resp = await app.state.client.get(
-                "https://www.thesportsdb.com/api/v1/json/3/lookupteam.php",
+                "https://www.thesportsdb.com/api/v1/json/3/searchteams.php",
                 params=team_params,
                 timeout=10,
             )
