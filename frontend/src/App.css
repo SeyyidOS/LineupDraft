@@ -45,9 +45,9 @@ body {
 
 .chem-badge {
   position: absolute;
-  top: 50%;
+  top: 4px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.6);
   color: #ffd700;
   font-size: 18px;
@@ -138,4 +138,5 @@ body {
 .info-list li {
   margin: 2px 0;
   color: #fff;
+  white-space: nowrap;
 }
