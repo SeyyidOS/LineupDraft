@@ -38,14 +38,16 @@ API_URL = "https://www.thesportsdb.com/api/v1/json/3/searchplayers.php"
 
 # Most popular leagues and teams are hard coded to avoid fetching
 # large lists from the upstream API which slowed down the app.
+# Limit leagues to those required by the frontend.  These names should
+# match exactly what the upstream API returns so that league lookups work
+# correctly.
 POPULAR_LEAGUES = [
     "Premier League",
     "La Liga",
     "Serie A",
     "Bundesliga",
     "Ligue 1",
-    "Major League Soccer",
-    "Brasileir\u00e3o",
+    "Turkish Super Lig",
     "Eredivisie",
 ]
 

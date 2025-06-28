@@ -3,7 +3,16 @@ export function calculateChemistry(players) {
   const leagues = {};
   const nations = {};
 
-  const norm = str => (str ? str.trim().toLowerCase() : '');
+  // Normalise strings for comparison.  This removes accents and
+  // lowercases the value so that 'Atletico' matches 'Atl\u00e9tico', etc.
+  const norm = (str) =>
+    str
+      ? str
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+      : '';
 
   players.flat().forEach(p => {
     if (!p) return;
