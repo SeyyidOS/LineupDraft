@@ -86,9 +86,9 @@ export default function ConditionModal({ options, onSelect, selected }) {
   return (
     <div className="condition-modal">
       <div className="condition-modal-content">
-        {options.map((opt, i) => (
+        {options.map((opt) => (
           <div
-            key={i}
+            key={`${opt.type}-${canonicalize(opt.value)}`}
             className={`condition-card ${selected === opt ? 'selected' : ''}`}
             onClick={() => onSelect(opt)}
           >
