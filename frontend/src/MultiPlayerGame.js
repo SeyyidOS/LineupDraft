@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 import ConditionBar from './ConditionBar';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
@@ -50,8 +51,8 @@ export default function MultiPlayerGame({ formation, players }) {
     const fetchMeta = async () => {
       try {
         const [leaguesRes, nationsRes] = await Promise.all([
-          axios.get('http://localhost:8000/leagues'),
-          axios.get('http://localhost:8000/nationalities'),
+          axios.get(`${API_BASE_URL}/leagues`),
+          axios.get(`${API_BASE_URL}/nationalities`),
         ]);
         setLeagues(leaguesRes.data.leagues || []);
         setNations(nationsRes.data.nationalities || []);
@@ -67,7 +68,7 @@ export default function MultiPlayerGame({ formation, players }) {
       const dict = {};
       for (const lg of leagues) {
         try {
-          const res = await axios.get('http://localhost:8000/teams', { params: { league: lg } });
+          const res = await axios.get(`${API_BASE_URL}/teams`, { params: { league: lg } });
           dict[lg] = res.data.teams || [];
         } catch (err) {
           console.error(err);
@@ -97,7 +98,7 @@ export default function MultiPlayerGame({ formation, players }) {
     const fetchPlayers = async () => {
       setLoading(true);
       try {
-        const res = await axios.get('http://localhost:8000/players', { params: { search: debouncedQuery } });
+        const res = await axios.get(`${API_BASE_URL}/players`, { params: { search: debouncedQuery } });
         if (cancel) return;
         const used = usedPlayers;
         const available = res.data.players.filter((name) => !used.includes(name));
@@ -150,7 +151,7 @@ export default function MultiPlayerGame({ formation, players }) {
   const handleSelect = async (name) => {
     if (!selectedPos) return;
     try {
-      const res = await axios.get('http://localhost:8000/player', { params: { name } });
+      const res = await axios.get(`${API_BASE_URL}/player`, { params: { name } });
       if (!matchesCondition(res.data)) {
         alert('Player does not match the selected condition');
         return;
