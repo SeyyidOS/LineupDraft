@@ -19,6 +19,9 @@ export default function ModeSelect({ onSelect }) {
         <div className="formation-option" onClick={() => onSelect('multi')}>
           Multiplayer
         </div>
+        <div className="formation-option" onClick={() => onSelect('free')}>
+          Free Play
+        </div>
       </div>
     </div>
   );

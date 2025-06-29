@@ -61,7 +61,7 @@ function getRandomOptions(teams, leagues, nations) {
 /**
  * Main component for a single player draft session.
  */
-function App({ formation = [1, 4, 4, 2] }) {
+function App({ formation = [1, 4, 4, 2], useConditions = true }) {
   const [players, setPlayers] = useState(
     formation.map((count) => Array(count).fill(null))
   );
@@ -81,8 +81,9 @@ function App({ formation = [1, 4, 4, 2] }) {
   const [selectedCondition, setSelectedCondition] = useState(null);
   const [step, setStep] = useState(0);
 
-  // Fetch leagues and nationalities on initial load
+  // Fetch leagues and nationalities on initial load when conditions are enabled
   useEffect(() => {
+    if (!useConditions) return;
     const fetchMeta = async () => {
       try {
         const [leaguesRes, nationsRes] = await Promise.all([
@@ -96,10 +97,11 @@ function App({ formation = [1, 4, 4, 2] }) {
       }
     };
     fetchMeta();
-  }, []);
+  }, [useConditions]);
 
   // Once leagues are fetched, load the top teams for each league
   useEffect(() => {
+    if (!useConditions) return;
     const fetchTeams = async () => {
       const dict = {};
       for (const lg of leagues) {
@@ -115,16 +117,17 @@ function App({ formation = [1, 4, 4, 2] }) {
     if (leagues.length) {
       fetchTeams();
     }
-  }, [leagues]);
+  }, [leagues, useConditions]);
 
   // When all metadata is available, generate initial condition options
   useEffect(() => {
+    if (!useConditions) return;
     if (leagues.length && nations.length && Object.keys(teamsByLeague).length) {
       setConditionOptions(
         getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations)
       );
     }
-  }, [leagues, nations, teamsByLeague]);
+  }, [leagues, nations, teamsByLeague, useConditions]);
 
   const debouncedQuery = useDebounce(query, 300);
   const totalSlots = players.flat().length;
@@ -135,25 +138,34 @@ function App({ formation = [1, 4, 4, 2] }) {
   useEffect(() => {
     setPlayers(formation.map((c) => Array(c).fill(null)));
     setChemistry(formation.map((c) => Array(c).fill(0)));
-    setConditionOptions(getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations));
-    setSelectedCondition(null);
-    setStep(0);
-  }, [formation]);
-
-  useEffect(() => {
-    if (step < totalSlots) {
-      setConditionOptions(getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations));
+    if (useConditions) {
+      setConditionOptions(
+        getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations)
+      );
       setSelectedCondition(null);
     }
-  }, [step, totalSlots]);
+    setStep(0);
+  }, [formation, useConditions]);
+
+  useEffect(() => {
+    if (!useConditions) return;
+    if (step < totalSlots) {
+      setConditionOptions(
+        getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations)
+      );
+      setSelectedCondition(null);
+    }
+  }, [step, totalSlots, useConditions]);
 
   const handleConditionSelect = (opt) => {
-    setSelectedCondition(opt);
+    if (useConditions) {
+      setSelectedCondition(opt);
+    }
   };
 
   const handleAddPlayer = (row, index) => {
     if (step >= totalSlots) return;
-    if (!selectedCondition) {
+    if (useConditions && !selectedCondition) {
       alert('Select a condition first');
       return;
     }
@@ -195,7 +207,7 @@ function App({ formation = [1, 4, 4, 2] }) {
   }, [players]);
 
   const matchesCondition = (player) => {
-    if (!selectedCondition) return true;
+    if (!useConditions || !selectedCondition) return true;
     const val = normalizeString(selectedCondition.value);
     if (selectedCondition.type === 'club') {
       return normalizeString(player.club) === val;
@@ -213,7 +225,7 @@ function App({ formation = [1, 4, 4, 2] }) {
     if (!selectedPos) return;
     try {
       const res = await getPlayerDetails(name);
-      if (!matchesCondition(res)) {
+      if (useConditions && !matchesCondition(res)) {
         alert('Player does not match the selected condition');
         return;
       }
@@ -231,13 +243,15 @@ function App({ formation = [1, 4, 4, 2] }) {
 
   return (
     <div className="field">
-      <ConditionBar
-        options={conditionOptions}
-        onSelect={handleConditionSelect}
-        selected={selectedCondition}
-      />
+      {useConditions && (
+        <ConditionBar
+          options={conditionOptions}
+          onSelect={handleConditionSelect}
+          selected={selectedCondition}
+        />
+      )}
       <div className="total-chemistry">{totalChem}/33</div>
-      {selectedCondition && (
+      {useConditions && selectedCondition && (
         <div className="current-condition">
           {selectedCondition.type === 'club' && `Team: ${selectedCondition.value}`}
           {selectedCondition.type === 'league' && `League: ${selectedCondition.value}`}
