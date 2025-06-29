@@ -77,7 +77,7 @@ POPULAR_TEAMS = {
     "Italian Serie A": [
         "Juventus",
         "AC Milan",
-        "Inter",
+        "Inter Milan",
         "Roma",
         "Lazio",
         "Napoli",
