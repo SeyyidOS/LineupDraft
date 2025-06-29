@@ -1,6 +1,10 @@
 import React from 'react';
 import './StartPage.css';
 
+/**
+ * Formation selection screen for starting a draft.
+ */
+
 const FORMATIONS = {
   '4-4-2': [1,4,4,2],
   '4-2-3-1': [1,4,2,3,1],
@@ -9,6 +13,9 @@ const FORMATIONS = {
   '4-3-3': [1,4,3,3]
 };
 
+/**
+ * Simple visual representation of a formation layout.
+ */
 function FormationVisual({ layout }) {
   return (
     <div className="formation-visual">
@@ -23,6 +30,9 @@ function FormationVisual({ layout }) {
   );
 }
 
+/**
+ * Choose a formation and start the draft.
+ */
 export default function StartPage({ onSelect }) {
   return (
     <div className="start-page">

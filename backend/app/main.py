@@ -1,3 +1,5 @@
+"""FastAPI backend providing player and metadata endpoints."""
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
@@ -21,16 +23,19 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
+    """Create a single shared HTTP client when the app starts."""
     app.state.client = httpx.AsyncClient()
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
+    """Close the shared HTTP client when the app shuts down."""
     await app.state.client.aclose()
 
 
 @app.get("/")
 async def root():
+    """Simple health endpoint."""
     return {"message": "Hello World"}
 
 
@@ -242,22 +247,3 @@ async def get_player_details(name: str):
     }
     player_detail_cache[name.lower()] = (now, result)
     return result
-
-
-# # Allow React dev server on localhost:3000
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:3000"],
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-
-# @app.on_event("startup")
-# def on_startup():
-#     database.Base.metadata.create_all(bind=database.engine)
-
-
-# @app.get("/health")
-# def health_check():
-#     return {"status": "ok"}

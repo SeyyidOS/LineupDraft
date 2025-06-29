@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import './ConditionModal.css';
 import { canonicalize } from './nameUtils';
 
+/**
+ * Modal that shows detailed condition options with logos.
+ */
+
+/**
+ * Display an image for a condition option.
+ */
 function Logo({ option }) {
   const [src, setSrc] = useState('/logo192.png');
 
@@ -82,6 +89,9 @@ function Logo({ option }) {
 }
 
 
+/**
+ * Modal wrapper component showing selectable options.
+ */
 export default function ConditionModal({ options, onSelect, selected }) {
   return (
     <div className="condition-modal">

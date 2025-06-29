@@ -4,6 +4,10 @@ import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
 import './App.css';
+
+/**
+ * Multiplayer version of the drafting game.
+ */
 import {
   getLeagues,
   getNationalities,
@@ -12,6 +16,9 @@ import {
   getPlayerDetails,
 } from './api';
 
+/**
+ * Select random club/league/nation options.
+ */
 function getRandomOptions(teams, leagues, nations) {
   const categories = ['club', 'league', 'nationality'];
   const opts = [];
@@ -34,6 +41,9 @@ function getRandomOptions(teams, leagues, nations) {
   return opts;
 }
 
+/**
+ * Main component for multiplayer drafting.
+ */
 export default function MultiPlayerGame({ formation, players }) {
   const totalSlots = formation.reduce((sum, c) => sum + c, 0);
   const [lineups, setLineups] = useState(players.map(() => formation.map((c) => Array(c).fill(null))));

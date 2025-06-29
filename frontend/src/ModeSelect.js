@@ -1,6 +1,13 @@
 import React from 'react';
 import './StartPage.css';
 
+/**
+ * Choose between single and multiplayer modes.
+ */
+
+/**
+ * Render mode selection screen.
+ */
 export default function ModeSelect({ onSelect }) {
   return (
     <div className="start-page">
