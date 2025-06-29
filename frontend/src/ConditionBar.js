@@ -12,7 +12,8 @@ function Logo({ option }) {
         const code = option.value
           .toLowerCase()
           .replace(/[^a-z]/g, '');
-        setSrc(`https://flagcdn.com/w80/${code}.png`);
+        // Load a smaller flag icon for better mobile performance
+        setSrc(`https://flagcdn.com/w40/${code}.png`);
         return;
       }
 
