@@ -17,12 +17,6 @@
   background: rgba(255, 255, 255, 0.9);
 }
 
-.condition-card img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  margin-bottom: 6px;
-}
 
 .condition-card.selected {
   border-color: #0044cc;
@@ -43,11 +37,6 @@
     padding: 6px;
   }
 
-  .condition-card img {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 4px;
-  }
 
   .condition-label {
     font-size: 12px;
