@@ -30,6 +30,10 @@ function Root() {
     return <App formation={formation} />;
   }
 
+  if (mode === 'free') {
+    return <App formation={formation} useConditions={false} />;
+  }
+
   return <MultiPlayerGame formation={formation} players={players} />;
 }
 
