@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import ConditionBar from './ConditionBar';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
 import './App.css';
+import {
+  getLeagues,
+  getNationalities,
+  getTeams,
+  searchPlayers,
+  getPlayerDetails,
+} from './api';
 
 function getRandomOptions(teams, leagues, nations) {
   const categories = ['club', 'league', 'nationality'];
@@ -50,11 +56,11 @@ export default function MultiPlayerGame({ formation, players }) {
     const fetchMeta = async () => {
       try {
         const [leaguesRes, nationsRes] = await Promise.all([
-          axios.get('http://localhost:8000/leagues'),
-          axios.get('http://localhost:8000/nationalities'),
+          getLeagues(),
+          getNationalities(),
         ]);
-        setLeagues(leaguesRes.data.leagues || []);
-        setNations(nationsRes.data.nationalities || []);
+        setLeagues(leaguesRes);
+        setNations(nationsRes);
       } catch (err) {
         console.error(err);
       }
@@ -67,8 +73,8 @@ export default function MultiPlayerGame({ formation, players }) {
       const dict = {};
       for (const lg of leagues) {
         try {
-          const res = await axios.get('http://localhost:8000/teams', { params: { league: lg } });
-          dict[lg] = res.data.teams || [];
+          const teams = await getTeams(lg);
+          dict[lg] = teams;
         } catch (err) {
           console.error(err);
         }
@@ -97,10 +103,10 @@ export default function MultiPlayerGame({ formation, players }) {
     const fetchPlayers = async () => {
       setLoading(true);
       try {
-        const res = await axios.get('http://localhost:8000/players', { params: { search: debouncedQuery } });
+        const names = await searchPlayers(debouncedQuery);
         if (cancel) return;
         const used = usedPlayers;
-        const available = res.data.players.filter((name) => !used.includes(name));
+        const available = names.filter((name) => !used.includes(name));
         setSuggestions(available);
       } catch (err) {
         if (!cancel) console.error(err);
@@ -150,15 +156,15 @@ export default function MultiPlayerGame({ formation, players }) {
   const handleSelect = async (name) => {
     if (!selectedPos) return;
     try {
-      const res = await axios.get('http://localhost:8000/player', { params: { name } });
-      if (!matchesCondition(res.data)) {
+      const res = await getPlayerDetails(name);
+      if (!matchesCondition(res)) {
         alert('Player does not match the selected condition');
         return;
       }
       const updated = lineups.map((lu) => lu.map((r) => [...r]));
-      updated[currentPlayer][selectedPos.row][selectedPos.index] = res.data;
+      updated[currentPlayer][selectedPos.row][selectedPos.index] = res;
       setLineups(updated);
-      setUsedPlayers([...usedPlayers, res.data.name]);
+      setUsedPlayers([...usedPlayers, res.name]);
       const newSteps = [...steps];
       newSteps[currentPlayer] += 1;
       setSteps(newSteps);
