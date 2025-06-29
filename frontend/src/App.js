@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 import './App.css';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
 import ConditionBar from './ConditionBar';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
 // Helper to normalise strings for comparisons. Removes accents and
 // converts to lowercase so that names match API data reliably.

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 import ConditionBar from './ConditionBar';
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
 import './App.css';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
 function getRandomOptions(teams, leagues, nations) {
   const categories = ['club', 'league', 'nationality'];
