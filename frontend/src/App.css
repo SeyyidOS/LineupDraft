@@ -150,3 +150,23 @@ body {
   margin-bottom: 10px;
   font-size: 18px;
 }
+
+@media (max-width: 480px) {
+  .position-container {
+    width: 60px;
+  }
+
+  .position {
+    width: 60px;
+    height: 60px;
+  }
+
+  .chem-badge {
+    top: -20px;
+    font-size: 14px;
+  }
+
+  .player-search input {
+    width: 160px;
+  }
+}
