@@ -3,6 +3,7 @@
   justify-content: center;
   gap: 20px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .condition-card {
@@ -31,4 +32,24 @@
 .condition-label {
   font-weight: bold;
   text-align: center;
+}
+
+@media (max-width: 480px) {
+  .condition-bar {
+    gap: 8px;
+  }
+
+  .condition-card {
+    padding: 6px;
+  }
+
+  .condition-card img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
+  }
+
+  .condition-label {
+    font-size: 12px;
+  }
 }
