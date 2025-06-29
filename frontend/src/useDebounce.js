@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
 
+/**
+ * Debounce a rapidly changing value.
+ * @param {*} value Input value
+ * @param {number} delay Delay in milliseconds
+ */
 export default function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 

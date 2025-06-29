@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import './StartPage.css';
 
+/**
+ * Component for entering player names before a multiplayer draft.
+ */
+
+/**
+ * Render the player entry form.
+ */
 export default function PlayerSetup({ onSubmit }) {
   const [name, setName] = useState('');
   const [players, setPlayers] = useState([]);

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+
+/**
+ * Single player drafting interface.
+ */
 import { calculateChemistry } from './chemistry';
 import useDebounce from './useDebounce';
 import { canonicalize } from './nameUtils';
@@ -22,6 +26,9 @@ const normalizeString = canonicalize;
 // Lists of teams, leagues and nationalities are now fetched from the backend
 // instead of being hard coded.
 
+/**
+ * Pick three random conditions from available metadata.
+ */
 function getRandomOptions(teams, leagues, nations) {
   const categories = ['club', 'league', 'nationality'];
   const opts = [];
@@ -51,6 +58,9 @@ function getRandomOptions(teams, leagues, nations) {
   return opts;
 }
 
+/**
+ * Main component for a single player draft session.
+ */
 function App({ formation = [1, 4, 4, 2] }) {
   const [players, setPlayers] = useState(
     formation.map((count) => Array(count).fill(null))

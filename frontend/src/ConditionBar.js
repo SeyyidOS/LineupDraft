@@ -2,6 +2,14 @@ import React from 'react';
 import './ConditionBar.css';
 import { canonicalize } from './nameUtils';
 
+/**
+ * Horizontal list of condition cards used during the draft.
+ */
+
+/**
+ * Render selectable draft conditions.
+ * @param {{options: Array, onSelect: Function, selected: Object}} props
+ */
 export default function ConditionBar({ options, onSelect, selected }) {
   return (
     <div className="condition-bar">
