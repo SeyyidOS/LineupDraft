@@ -49,6 +49,7 @@ export default function MultiPlayerGame({ formation, players }) {
   const [lineups, setLineups] = useState(players.map(() => formation.map((c) => Array(c).fill(null))));
   const [chemistry, setChemistry] = useState(players.map(() => formation.map((c) => Array(c).fill(0))));
   const [steps, setSteps] = useState(players.map(() => 0));
+  const [finished, setFinished] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [pickerIndex, setPickerIndex] = useState(0);
   const [conditionOptions, setConditionOptions] = useState([]);
@@ -172,12 +173,21 @@ export default function MultiPlayerGame({ formation, players }) {
         return;
       }
       const updated = lineups.map((lu) => lu.map((r) => [...r]));
+      const prev = updated[currentPlayer][selectedPos.row][selectedPos.index];
       updated[currentPlayer][selectedPos.row][selectedPos.index] = res;
       setLineups(updated);
-      setUsedPlayers([...usedPlayers, res.name]);
+      const newUsed = [...usedPlayers];
+      if (prev) {
+        const idx = newUsed.indexOf(prev.name);
+        if (idx !== -1) newUsed.splice(idx, 1);
+      }
+      newUsed.push(res.name);
+      setUsedPlayers(newUsed);
       const newSteps = [...steps];
-      newSteps[currentPlayer] += 1;
-      setSteps(newSteps);
+      if (!prev) {
+        newSteps[currentPlayer] += 1;
+        setSteps(newSteps);
+      }
       const nextPlayer = (currentPlayer + 1) % players.length;
       if (nextPlayer === pickerIndex) {
         setSelectedCondition(null);
@@ -193,10 +203,10 @@ export default function MultiPlayerGame({ formation, players }) {
     setSuggestions([]);
   };
 
-  const allDone = steps.every((s) => s >= totalSlots);
+  const allFilled = lineups.every((lu) => lu.flat().every((p) => p));
   const displayRows = lineups[currentPlayer].slice().reverse();
 
-  if (allDone) {
+  if (finished) {
     return (
       <div className="field">
         <h2>Draft complete!</h2>
@@ -258,6 +268,11 @@ export default function MultiPlayerGame({ formation, players }) {
             </div>
           )}
         </div>
+      )}
+      {allFilled && !finished && (
+        <button className="finish-button" onClick={() => setFinished(true)}>
+          Finish Draft
+        </button>
       )}
     </div>
   );

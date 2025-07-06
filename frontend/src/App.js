@@ -80,6 +80,7 @@ function App({ formation = [1, 4, 4, 2], useConditions = true }) {
   const [conditionOptions, setConditionOptions] = useState([]);
   const [selectedCondition, setSelectedCondition] = useState(null);
   const [step, setStep] = useState(0);
+  const [finished, setFinished] = useState(false);
 
   // Fetch leagues and nationalities on initial load when conditions are enabled
   useEffect(() => {
@@ -131,6 +132,7 @@ function App({ formation = [1, 4, 4, 2], useConditions = true }) {
 
   const debouncedQuery = useDebounce(query, 300);
   const totalSlots = players.flat().length;
+  const allFilled = players.flat().every((p) => p);
 
   const displayRows = players.slice().reverse();
 
@@ -145,17 +147,16 @@ function App({ formation = [1, 4, 4, 2], useConditions = true }) {
       setSelectedCondition(null);
     }
     setStep(0);
+    setFinished(false);
   }, [formation, useConditions]);
 
   useEffect(() => {
-    if (!useConditions) return;
-    if (step < totalSlots) {
-      setConditionOptions(
-        getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations)
-      );
-      setSelectedCondition(null);
-    }
-  }, [step, totalSlots, useConditions]);
+    if (!useConditions || finished) return;
+    setConditionOptions(
+      getRandomOptions(Object.values(teamsByLeague).flat(), leagues, nations)
+    );
+    setSelectedCondition(null);
+  }, [step, useConditions, finished, leagues, nations, teamsByLeague]);
 
   const handleConditionSelect = (opt) => {
     if (useConditions) {
@@ -164,7 +165,6 @@ function App({ formation = [1, 4, 4, 2], useConditions = true }) {
   };
 
   const handleAddPlayer = (row, index) => {
-    if (step >= totalSlots) return;
     if (useConditions && !selectedCondition) {
       alert('Select a condition first');
       return;
@@ -230,9 +230,12 @@ function App({ formation = [1, 4, 4, 2], useConditions = true }) {
         return;
       }
       const updated = players.map(r => [...r]);
+      const wasEmpty = !updated[selectedPos.row][selectedPos.index];
       updated[selectedPos.row][selectedPos.index] = res;
       setPlayers(updated);
-      setStep(step + 1);
+      if (wasEmpty) {
+        setStep(step + 1);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -240,6 +243,14 @@ function App({ formation = [1, 4, 4, 2], useConditions = true }) {
     setQuery('');
     setSuggestions([]);
   };
+
+  if (finished) {
+    return (
+      <div className="field">
+        <h2>Draft complete!</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="field">
@@ -334,6 +345,11 @@ function App({ formation = [1, 4, 4, 2], useConditions = true }) {
             </div>
           )}
         </div>
+      )}
+      {allFilled && !finished && (
+        <button className="finish-button" onClick={() => setFinished(true)}>
+          Finish Draft
+        </button>
       )}
     </div>
   );
