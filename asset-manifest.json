@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/LineupDraft/static/css/main.c16e7bff.css",
-    "main.js": "/LineupDraft/static/js/main.a7e82fdf.js",
+    "main.js": "/LineupDraft/static/js/main.f3a1c8ae.js",
     "index.html": "/LineupDraft/index.html",
     "main.c16e7bff.css.map": "/LineupDraft/static/css/main.c16e7bff.css.map",
-    "main.a7e82fdf.js.map": "/LineupDraft/static/js/main.a7e82fdf.js.map"
+    "main.f3a1c8ae.js.map": "/LineupDraft/static/js/main.f3a1c8ae.js.map"
   },
   "entrypoints": [
     "static/css/main.c16e7bff.css",
-    "static/js/main.a7e82fdf.js"
+    "static/js/main.f3a1c8ae.js"
   ]
 }
